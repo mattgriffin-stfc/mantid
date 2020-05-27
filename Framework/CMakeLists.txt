@@ -1,5 +1,5 @@
 # This is mainly here so you don't get a complaint when running cmake
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.13)
 
 # Add the path to our custom 'find' modules
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../buildconfig/CMake")
@@ -31,6 +31,23 @@ endif()
 # Boost_LIBRARIES variable is redefined by MPISetup so capture the value here
 # and just add MPI stuff if required
 set(MANTIDLIBS ${Boost_LIBRARIES} ${POCO_LIBRARIES})
+
+
+# CUDA-enable build setup
+
+# Nvidia CUDA
+option(CUDA_BUILD "Enable NVIDIA CUDA build")
+if (CUDA_BUILD)
+  find_package(CUDA 7.0 REQUIRED)
+
+  if (CUDA_FOUND)
+    enable_language(CUDA)
+    string(APPEND CMAKE_CUDA_FLAGS " -gencode arch=compute_60,code=sm_60 -ftz=true -lineinfo")
+  else()
+    message(FATAL "No CUDA 7.0 compiler found")
+  endif()
+endif()
+
 
 # MPI-enable build setup
 
@@ -124,6 +141,11 @@ if(MPI_BUILD)
   add_subdirectory(MPIAlgorithms)
 endif()
 
+# If a CUDA-enabled build, add in the CUDA-specific algorithms package
+if (CUDA_BUILD)
+  add_subdirectory(CudaAlgorithms)
+endif()
+
 add_subdirectory (MDAlgorithms)
 add_subdirectory (Doxygen)
 add_subdirectory (ScriptRepository)
@@ -143,6 +165,7 @@ set(FRAMEWORK_LIBS
     Nexus
     NexusGeometry
     Algorithms
+    CudaAlgorithms
     CurveFitting
     ICat
     Catalog
