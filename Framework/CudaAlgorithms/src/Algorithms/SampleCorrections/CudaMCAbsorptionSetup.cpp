@@ -155,7 +155,6 @@ CudaMCAbsorptionSetup<etype>::CudaMCAbsorptionSetup(
                                  md_environmentBounds, cudaStream);
 
   m_deviceParams.sample = createSample(sample, cudaStream);
-  std::cerr << m_deviceParams.sample << std::endl;
 
   if (sample.hasEnvironment()) {
     auto &environment = sample.getEnvironment();
