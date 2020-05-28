@@ -39,9 +39,29 @@ endif()
 # -Wno-deprecated: Do not warn about use of deprecated headers.
 # -Wno-write-strings: Do not warn about deprecated conversions of char*->const char*
 # -Wno-unused-result: Do not warn about unused return values in some C functions
-add_compile_options ( -Wall -Wextra -Wconversion -Winit-self -Wpointer-arith
-                      -Wcast-qual -Wcast-align -fno-common -Wno-deprecated
-                      -Wno-write-strings -Wno-unused-result)
+add_compile_options ( $<$<COMPILE_LANGUAGE:CXX>:-Wall>
+                      $<$<COMPILE_LANGUAGE:CXX>:-Wextra>
+                      $<$<COMPILE_LANGUAGE:CXX>:-Wconversion>
+                      $<$<COMPILE_LANGUAGE:CXX>:-Winit-self>
+                      $<$<COMPILE_LANGUAGE:CXX>:-Wpointer-arith>
+                      $<$<COMPILE_LANGUAGE:CXX>:-Wcast-qual>
+                      $<$<COMPILE_LANGUAGE:CXX>:-Wcast-align>
+                      $<$<COMPILE_LANGUAGE:CXX>:-fno-common>
+                      $<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated>
+                      $<$<COMPILE_LANGUAGE:CXX>:-Wno-write-strings>
+                      $<$<COMPILE_LANGUAGE:CXX>:-Wno-unused-result>)
+add_compile_options ( $<$<COMPILE_LANGUAGE:C>:-Wall>
+                      $<$<COMPILE_LANGUAGE:C>:-Wextra>
+                      $<$<COMPILE_LANGUAGE:C>:-Wconversion>
+                      $<$<COMPILE_LANGUAGE:C>:-Winit-self>
+                      $<$<COMPILE_LANGUAGE:C>:-Wpointer-arith>
+                      $<$<COMPILE_LANGUAGE:C>:-Wcast-qual>
+                      $<$<COMPILE_LANGUAGE:C>:-Wcast-align>
+                      $<$<COMPILE_LANGUAGE:C>:-fno-common>
+                      $<$<COMPILE_LANGUAGE:C>:-Wno-deprecated>
+                      $<$<COMPILE_LANGUAGE:C>:-Wno-write-strings>
+                      $<$<COMPILE_LANGUAGE:C>:-Wno-unused-result>)
+
 # C++-specific flags
 add_compile_options ( $<$<COMPILE_LANGUAGE:CXX>:-Woverloaded-virtual>
   $<$<COMPILE_LANGUAGE:CXX>:-fno-operator-names>
@@ -56,17 +76,20 @@ endif ()
 
 # Check if we have a new enough version for these flags
 if ( CMAKE_COMPILER_IS_GNUCXX )
-  add_compile_options ( -Wpedantic )
+  add_compile_options ( $<$<COMPILE_LANGUAGE:C>:-Wpedantic> )
+  add_compile_options ( $<$<COMPILE_LANGUAGE:CXX>:-Wpedantic> )
   if (NOT (GCC_COMPILER_VERSION VERSION_LESS "5.1"))
     add_compile_options ( $<$<COMPILE_LANGUAGE:CXX>:-Wsuggest-override> )
   endif()
   if (NOT (GCC_COMPILER_VERSION VERSION_LESS "7.1"))
     # Consider enabling once [[fallthrough]] is available on all platforms.
     # https://developers.redhat.com/blog/2017/03/10/wimplicit-fallthrough-in-gcc-7/
-    add_compile_options ( -Wimplicit-fallthrough=0 )
+    add_compile_options ( $<$<COMPILE_LANGUAGE:C>:-Wimplicit-fallthrough=0> )
+    add_compile_options ( $<$<COMPILE_LANGUAGE:CXX>:-Wimplicit-fallthrough=0> )
   endif()
 elseif ( "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" )
-  add_compile_options ( -Wno-sign-conversion )
+  add_compile_options ( $<$<COMPILE_LANGUAGE:C>:-Wno-sign-conversion> )
+  add_compile_options ( $<$<COMPILE_LANGUAGE:CXX>:-Wno-sign-conversion> )
 endif()
 
 # Add some options for debug build to help the Zoom profiler
@@ -96,15 +119,19 @@ option (COLORED_COMPILER_OUTPUT "Always produce ANSI-colored output (GNU/Clang o
 
 if(COLORED_COMPILER_OUTPUT)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    add_compile_options(-fdiagnostics-color=always)
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-fdiagnostics-color=always>)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fdiagnostics-color=always>)
   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_compile_options(-fcolor-diagnostics)
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-fcolor-diagnostics>)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fcolor-diagnostics>)
   endif()
 else()
   # disables the color output on diagnostics
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    add_compile_options(-fdiagnostics-color=never)
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-fdiagnostics-color=never>)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fdiagnostics-color=never>)
   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_compile_options(-fno-color-diagnostics)
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-fno-color-diagnostics>)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-color-diagnostics>)
   endif()
 endif()
